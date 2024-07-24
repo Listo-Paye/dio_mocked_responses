@@ -1,6 +1,9 @@
-library dio_mock_interceptor;
+library dio_mocked_responses;
+
+//ignore_for_file:  prefer_interpolation_to_compose_strings,unnecessary_string_escapes
 
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:template_expressions/template_expressions.dart';

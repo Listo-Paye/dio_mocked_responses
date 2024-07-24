@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor/blob/63d859aba8b999b9e62431c5675a8bfa312667ae/LICENSE)
 
 
-This widget help you to mock backend responses in flutter project.
+_Forked from [Flutter Dio Mock Interceptor](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor)_ 
 
 
 # Environment
@@ -17,7 +17,7 @@ The widget was only tested on following environment,
 * Install: 
   ```yaml
   dev_dependencies:
-	  dio_mock_interceptor: ^2.1.0
+	  dio_mocked_responses: ^1.0.0
   ```
 
 * Create a <code>mock</code> folder in your project, add json files to mock http responses, 
@@ -253,8 +253,8 @@ The widget was only tested on following environment,
 
 # License
 
-Copyright (c) 2023-present [Yong-Xin Technology Ltd.](https://yong-xin.tech/)
-
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor/blob/63d859aba8b999b9e62431c5675a8bfa312667ae/LICENSE) file for details.
 
-
+> Copyright (c) 2024-present [Listo Paye](https://listo.pro/)
+> 
+> Copyright (c) 2023-present [Yong-Xin Technology Ltd.](https://yong-xin.tech/)
