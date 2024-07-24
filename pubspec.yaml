@@ -1,24 +1,23 @@
 name: dio_mocked_responses
 description: Interceptor that help you to mock backend responses in flutter project.
-version: 1.0.0
+version: 1.0.0+1
 homepage: https://github.com/yongxin-tech
 repository: https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor
 
 environment:
-  sdk: '>=2.19.2 <4.0.0'
+  sdk: '>=3.3.2 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
   dio: '^5.0.0'
-  template_expressions: ^3.1.5+4
+  template_expressions: ^3.2.0+9
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-  test: ^1.24.9
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
