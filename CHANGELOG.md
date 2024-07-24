@@ -1,3 +1,6 @@
+## 1.1.0
+* Change json file structure to stop use asset folder
+
 ## 1.0.0+1
 * Added Github Actions for CI/CD
 

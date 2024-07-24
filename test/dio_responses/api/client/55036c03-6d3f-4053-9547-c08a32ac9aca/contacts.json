@@ -1,0 +1,17 @@
+{
+  "GET": {
+    "statusCode": 200,
+    "data": {
+      "contacts": [
+        {
+          "id": 1,
+          "name": "Seth Ladd"
+        },
+        {
+          "id": 2,
+          "name": "Eric Seidel"
+        }
+      ]
+    }
+  }
+}

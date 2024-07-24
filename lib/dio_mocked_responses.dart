@@ -3,62 +3,43 @@ library dio_mocked_responses;
 //ignore_for_file:  prefer_interpolation_to_compose_strings,unnecessary_string_escapes
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/services.dart';
 import 'package:template_expressions/template_expressions.dart';
 
 class MockInterceptor extends Interceptor {
-  late Future _futureManifestLoaded;
-  final List<Future> _futuresBundleLoaded = [];
-  final Map<String, Map<String, dynamic>> _routes = {};
+  late final String _basePath;
   final RegExp _regexpTemplate = RegExp(r'"\$\{template\}"');
   static const StandardExpressionSyntax _exSyntax = StandardExpressionSyntax();
 
-  MockInterceptor() {
-    _futureManifestLoaded =
-        rootBundle.loadString('AssetManifest.json').then((manifestContent) {
-      Map<String, dynamic> manifestMap = json.decode(manifestContent);
-
-      List<String> mockResourcePaths = manifestMap.keys
-          .where((String key) => key.contains('mock/') && key.endsWith('.json'))
-          .toList();
-      if (mockResourcePaths.isEmpty) {
-        return;
-      }
-      for (var path in mockResourcePaths) {
-        Future bundleLoaded = rootBundle.load(path).then((ByteData data) {
-          String routeModule = utf8.decode(
-            data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-          );
-          json.decode(routeModule).forEach((dynamic map) {
-            Map<String, dynamic> route = map as Map<String, dynamic>;
-            String path = route['path'] as String;
-            _routes.putIfAbsent(path, () => route);
-          });
-        });
-        _futuresBundleLoaded.add(bundleLoaded);
-      }
-    });
+  MockInterceptor({String basePath = 'test/dio_responses'}) {
+    _basePath = basePath.endsWith('/') ? basePath : '$basePath/';
   }
 
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    await _futureManifestLoaded;
-    await Future.wait(_futuresBundleLoaded);
+    final file = File('$_basePath${options.path}.json');
 
-    Map<String, dynamic>? route = _routes[options.path];
-
-    if (route == null) {
+    if (!file.existsSync()) {
       handler.reject(DioException(
-          requestOptions: options,
-          error: "Can't find route setting: ${options.path}"));
+          requestOptions: options, error: "Can't find file: ${file.path}"));
       return;
     }
 
-    String method = route['method'] as String;
-    if (options.method != method) {
+    late final Map<String, dynamic> json;
+    try {
+      json = jsonDecode(await file.readAsString());
+    } catch (e) {
+      handler.reject(DioException(
+          requestOptions: options, error: "Can't parse file: ${file.path}"));
+      return;
+    }
+
+    final Map<String, dynamic> route = json[options.method];
+
+    if (route.isEmpty) {
       handler.reject(DioException(
           requestOptions: options,
           error:
@@ -130,7 +111,7 @@ class MockInterceptor extends Interceptor {
       return;
     }
 
-    String resData = json.encode(data);
+    String resData = jsonEncode(data);
 
     if (template != null) {
       String tData = _templateData(template, exContext);

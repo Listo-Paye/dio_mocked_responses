@@ -1,10 +1,8 @@
 # Flutter Dio Mock Interceptor
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor/blob/63d859aba8b999b9e62431c5675a8bfa312667ae/LICENSE)
+_Forked from [Flutter Dio Mock Interceptor](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor)_
 
-
-_Forked from [Flutter Dio Mock Interceptor](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor)_ 
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor/blob/63d859aba8b999b9e62431c5675a8bfa312667ae/LICENSE) [![Publish to pub.dev](https://github.com/Listo-Paye/dio_mocked_responses/actions/workflows/publish.yaml/badge.svg)](https://github.com/Listo-Paye/dio_mocked_responses/actions/workflows/publish.yaml)
 
 # Environment
 
@@ -14,242 +12,94 @@ The widget was only tested on following environment,
 
 # Usage
 
-* Install: 
-  ```yaml
-  dev_dependencies:
-	  dio_mocked_responses: ^1.0.0
-  ```
+Add interceptor to Dio
+```dart
+    final dio = Dio()
+      ..interceptors.add(
+        MockInterceptor(
+          basePath: 'test/dio_responses',
+        ),
+      );
+```
 
-* Create a <code>mock</code> folder in your project, add json files to mock http responses, 
-  example: <project>/mock/common.json
+`basePath` is the path to the folder containing the mock responses. The path is relative to the root of the assets folder.
+His default value is `test/dio_responses`.
+
+By example, if you want to test your backend API for the route `api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts`, create the file at `test/dio_responses/api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts.json` with:
   
   ```json
-  [
-	  {
-      "path": "/api/basic/data",
-      "method": "POST",
-      "statusCode": 200,
-      "data": {
-        "success": true,
-        "code": "0000",
-        "result": {
-            "test": "test"
+{
+  "GET": {
+    "statusCode": 200,
+    "data": {
+      "contacts": [
+        {
+          "id": 1,
+          "name": "Seth Ladd"
+        },
+        {
+          "id": 2,
+          "name": "Eric Seidel"
         }
-      }
-    },
-    {
-      "path": "/api/basic/data/empty",
-      "method": "POST",
-      "statusCode": 200,
-      "data": {}
+      ]
     }
-  ]
-  ```
-  
-* Setup <code>mock</code> folder to <code>assets</code> section of <code>pubspec.yaml</code>: 
-  ```yaml
-  assets:
-    - mock/
+  }
+}
   ```
 
-* Add interceptor to Dio:
-  ```flutter
-  import 'package:dio_mock_interceptor/dio_mock_interceptor.dart';
-  
-  dio.interceptors.add(MockInterceptor());
-  ```
+* For this example:
+```dart
+  test('Load file with Interceptor', () async {
+    final dio = Dio()
+      ..interceptors.add(
+        MockInterceptor(basePath: 'test/dio_responses'),
+      );
+
+    final response = await dio.get(
+      'api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts',
+    );
+    expect(response.statusCode, equals(200));
+    expect(response.data, isNotNull);
+    final json = jsonDecode(response.data);
+    final contacts = json['contacts'];
+
+    final seth = contacts.first;
+    expect(seth['id'], 1);
+    expect(seth['name'], 'Seth Ladd');
+
+    final eric = contacts.last;
+    expect(eric['id'], 2);
+    expect(eric['name'], 'Eric Seidel');
+  });
+```
 
 * Dio post example:
-  ```flutter
-  Response response = await dio.post("/api/basic/data");
-  String json = response.data;
-  if (json.isEmpty) {
-    throw Exception('response is empty');
-  }
-  Map<String, dynamic> data = jsonDecode(json);
-  bool isSuccess = data['success'] as bool; // true
-  Map<String, dynamic> result = data['result']; // result['test'] = 'test'
-  ```
+```dart
+Response response = await dio.post("/api/basic/data");
+String json = response.data;
+if (json.isEmpty) {
+  throw Exception('response is empty');
+}
+Map<String, dynamic> data = jsonDecode(json);
+bool isSuccess = data['success'] as bool; // true
+Map<String, dynamic> result = data['result']; // result['test'] = 'test'
+```
 
 * Template example:
-  ```json
-  [
-	  {
-      "path": "/api/template/without-data-block",
-      "method": "POST",
-      "statusCode": 200,
-      "template": {
-        "size": 100000,
-        "content": {
-          "id": "test${index}",
-          "name": "name_${index}"
-        }
-      }
-    },
-    {
-      "path": "/api/template/with-data-block",
-      "method": "POST",
-      "statusCode": 200,
-      "data": {
-        "id": "yong-xin",
-        "listA": "${template}"
-      },
-      "template": {
-        "size": 1000,
-        "content": {
-          "id": "test${index}",
-          "name": "name_${index}"
-        }
-      }
-    },
-    {
-      "path": "/api/template/with-data-block/ex2",
-      "method": "POST",
-      "statusCode": 200,
-      "data": {
-        "id": "yong-xin",
-        "listA": "${template}",
-        "field2": {
-          "listB": "${template}"
-        }
-      },
-      "template": {
-        "size": 1000,
-        "content": {
-          "id": "test${index}",
-          "name": "name_${index}"
-        }
-      }
-    },
-    {
-      "path": "/api/templates/ex1",
-      "method": "POST",
-      "statusCode": 200,
-      "data": {
-        "id": "yong-xin",
-        "listA": "${templates.name1}",
-        "field": {
-          "listB": "${templates.name2}"
-        }
-      },
-      "templates": {
-        "name1": {
-          "size": 1000,
-          "content": {
-            "id": "test${index}",
-            "name": "name_${index}"
-          }
-        },
-        "name2": {
-          "size": 10,
-          "content": {
-            "id": "test2${index}",
-            "name": "name2_${index}"
-          }
-        }
+```json
+{
+  "POST": {
+    "statusCode": 200,
+    "template": {
+      "size": 100000,
+      "content": {
+        "id": "test${index}",
+        "name": "name_${index}"
       }
     }
-  ]
-  ```
-* Expression example:
-  ```json
-  [
-    {
-      "path": "/api/expression/req-data",
-      "method": "POST",
-      "statusCode": 200,
-      "data": {
-        "id": "yong-xin",
-        "desc": "Hi ${req['data']['name']}, I am ${req['data']['name2'] + '_varSuffix'}",
-        "desc2": "test header, ${req['headers']['content-type']}",
-        "desc3": "test queryParameter, ${req['queryParameters']['name3']}",
-        "desc4": "test baseUrl, ${req['baseUrl']}",
-        "desc5": "test method, ${req['method']}",
-        "desc6": "test path, ${req['path']}"
-      }
-    },
-    {
-      "path": "/api/expression/req-data/form-data",
-      "method": "POST",
-      "statusCode": 200,
-      "data": {
-        "desc": "Hi ${req['data']['name']}, test date: ${req['data']['date']}"
-      }
-    },
-    {
-      "path": "/api/expression/vars",
-      "method": "POST",
-      "statusCode": 200,
-      "data": {
-        "id": "yong-xin",
-        "listA": "${templates.name1}",
-        "field": {
-          "listB": "${templates.name2}"
-        },
-        "arry": "${groups}",
-        "objA": "${obj}"
-      },
-      "vars": {
-        "n": 5,
-        "groups": [
-          "May",
-          "YongXin",
-          "John"
-        ],
-        "obj": {
-          "name": "objName"
-        }
-      },
-      "templates": {
-        "name1": {
-          "size": 1000,
-          "content": {
-            "id": "test${index}",
-            "group": "g_${groups[index%3]}",
-            "name": "name_${index}",
-            "req-data-name": "test_${req['data']['name']}"
-          }
-        },
-        "name2": {
-          "size": 10,
-          "content": {
-            "id": "test2${index}",
-            "name": "name2_${index}"
-          }
-        }
-      }
-    },
-    {
-      "path": "/api/expression/vars/template-ex",
-      "method": "POST",
-      "statusCode": 200,
-      "data": {
-        "id": "yong-xin",
-        "listA": "${template}"
-      },
-      "vars": {
-        "n": 5,
-        "groups": [
-          "May",
-          "YongXin",
-          "John"
-        ],
-        "obj": {
-          "name": "objName"
-        }
-      },
-      "template": {
-        "size": 1000,
-        "content": {
-          "id": "test${index}",
-          "group": "g_${groups[index%3]}",
-          "name": "name_${index}",
-          "req-data-name": "test_${(req['data']['name'].contains('Mercury')? 'a':'b')}"
-        }
-      }
-    }
-  ]
-  ```
+  }
+}
+```
 
 # License
 
