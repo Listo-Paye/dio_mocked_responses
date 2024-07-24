@@ -49,40 +49,27 @@ By example, if you want to test your backend API for the route `api/client/55036
 
 * For this example:
 ```dart
-  test('Load file with Interceptor', () async {
+test('Load file with Interceptor', () async {
     final dio = Dio()
-      ..interceptors.add(
-        MockInterceptor(basePath: 'test/dio_responses'),
-      );
-
-    final response = await dio.get(
-      'api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts',
+    ..interceptors.add(
+    MockInterceptor(basePath: 'test/dio_responses'),
+    );
+    
+    final response = await dio.get<Map<String, dynamic>>(
+    'api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts',
     );
     expect(response.statusCode, equals(200));
     expect(response.data, isNotNull);
-    final json = jsonDecode(response.data);
-    final contacts = json['contacts'];
-
+    final contacts = response.data!['contacts'];
+    
     final seth = contacts.first;
     expect(seth['id'], 1);
     expect(seth['name'], 'Seth Ladd');
-
+    
     final eric = contacts.last;
     expect(eric['id'], 2);
     expect(eric['name'], 'Eric Seidel');
-  });
-```
-
-* Dio post example:
-```dart
-Response response = await dio.post("/api/basic/data");
-String json = response.data;
-if (json.isEmpty) {
-  throw Exception('response is empty');
-}
-Map<String, dynamic> data = jsonDecode(json);
-bool isSuccess = data['success'] as bool; // true
-Map<String, dynamic> result = data['result']; // result['test'] = 'test'
+});
 ```
 
 * Template example:

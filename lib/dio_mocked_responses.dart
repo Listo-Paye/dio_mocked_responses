@@ -138,7 +138,7 @@ class MockInterceptor extends Interceptor {
     ).process(context: exContext);
 
     handler.resolve(Response(
-      data: resData,
+      data: jsonDecode(resData),
       requestOptions: options,
       statusCode: statusCode,
     ));

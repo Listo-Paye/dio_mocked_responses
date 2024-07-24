@@ -32,13 +32,12 @@ void main() {
         MockInterceptor(basePath: 'test/dio_responses'),
       );
 
-    final response = await dio.get(
+    final response = await dio.get<Map<String, dynamic>>(
       'api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts',
     );
     expect(response.statusCode, equals(200));
     expect(response.data, isNotNull);
-    final json = jsonDecode(response.data);
-    final contacts = json['contacts'];
+    final contacts = response.data!['contacts'];
 
     final seth = contacts.first;
     expect(seth['id'], 1);

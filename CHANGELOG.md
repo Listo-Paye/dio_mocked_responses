@@ -1,3 +1,6 @@
+## 1.1.0+1
+* Fix return type of data for mocked responses
+
 ## 1.1.0
 * Change json file structure to stop use asset folder
 
