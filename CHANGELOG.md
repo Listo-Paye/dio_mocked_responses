@@ -1,3 +1,6 @@
+## 1.2.0
+* Take query paramters in file path
+
 ## 1.1.0+1
 * Fix return type of data for mocked responses
 

@@ -20,7 +20,9 @@ class MockInterceptor extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    final file = File('$_basePath${options.path}.json');
+    final file = File(
+      '$_basePath${options.path.replaceAll(RegExp(r"(\?|=|&)"), '_')}.json',
+    );
 
     if (!file.existsSync()) {
       handler.reject(DioException(
