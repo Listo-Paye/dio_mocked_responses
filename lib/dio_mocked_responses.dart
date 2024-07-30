@@ -32,7 +32,7 @@ class MockInterceptor extends Interceptor {
 
     late final Map<String, dynamic> json;
     try {
-      json = jsonDecode(await file.readAsString());
+      json = jsonDecode(file.readAsStringSync());
     } catch (e) {
       handler.reject(DioException(
           requestOptions: options, error: "Can't parse file: ${file.path}"));

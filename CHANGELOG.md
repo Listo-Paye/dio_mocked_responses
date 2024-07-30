@@ -1,3 +1,6 @@
+## 1.2.0+1
+* Fixed blocking test with readAsString async
+
 ## 1.2.0
 * Take query paramters in file path
 
