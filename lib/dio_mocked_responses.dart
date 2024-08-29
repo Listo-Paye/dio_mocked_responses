@@ -52,7 +52,7 @@ class MockInterceptor extends Interceptor {
     int statusCode = route['statusCode'] as int;
 
     Map<String, dynamic>? template = route['template'];
-    Map<String, dynamic>? data = route['data'];
+    Object? data = route['data'];
 
     if (template == null && data == null) {
       handler.resolve(Response(

@@ -7,7 +7,7 @@ _Forked from [Flutter Dio Mock Interceptor](https://github.com/yongxin-tech/Flut
 # Environment
 
 The widget was only tested on following environment,
-* Flutter: 3.7.5+ (with sound null safety)
+* Flutter: 3.24+ (with sound null safety)
 * Dio: 5.0.0+
 
 # Usage

@@ -1,3 +1,6 @@
+## 1.3.0
+* Add support for Array in DataResponse
+
 ## 1.2.0+1
 * Fixed blocking test with readAsString async
 
