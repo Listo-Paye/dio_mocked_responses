@@ -1,3 +1,6 @@
+## 1.4.0
+* Add history of requests
+
 ## 1.3.0
 * Add support for Array in DataResponse
 

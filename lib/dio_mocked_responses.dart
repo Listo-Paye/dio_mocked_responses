@@ -12,9 +12,16 @@ class MockInterceptor extends Interceptor {
   late final String _basePath;
   final RegExp _regexpTemplate = RegExp(r'"\$\{template\}"');
   static const StandardExpressionSyntax _exSyntax = StandardExpressionSyntax();
+  static final List<HistoryItem> _history = [];
 
   MockInterceptor({String basePath = 'test/dio_responses'}) {
     _basePath = basePath.endsWith('/') ? basePath : '$basePath/';
+  }
+
+  static List<HistoryItem> get history => _history;
+
+  static void clearHistory() {
+    _history.clear();
   }
 
   @override
@@ -23,6 +30,9 @@ class MockInterceptor extends Interceptor {
     final file = File(
       '$_basePath${options.path.replaceAll(RegExp(r"(\?|=|&)"), '_')}.json',
     );
+
+    _history.add(
+        HistoryItem(options.method, options.path, options.queryParameters));
 
     if (!file.existsSync()) {
       handler.reject(DioException(
@@ -187,4 +197,12 @@ class MockInterceptor extends Interceptor {
     }).join(",");
     return "[$joinString]";
   }
+}
+
+class HistoryItem {
+  final String method;
+  final String path;
+  final dynamic data;
+
+  HistoryItem(this.method, this.path, this.data);
 }
