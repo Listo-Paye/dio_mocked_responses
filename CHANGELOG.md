@@ -1,3 +1,6 @@
+## 1.5.0
+* Add context support
+
 ## 1.4.0
 * Add history of requests
 

@@ -88,6 +88,38 @@ test('Load file with Interceptor', () async {
 }
 ```
 
+## Get history
+You can get the history of requests with the `history` property of the interceptor.
+
+```dart
+Future<void> aCallWasMadeWithData(
+    WidgetTester tester,
+    String verb,
+    String path,
+    bdd.DataTable dataTable,
+    ) async {
+  expect(
+      MockInterceptor.history.where((p) => p.method == verb && p.path == path),
+      hasLength(1));
+}
+```
+
+## Contextualised responses
+
+You can contextualize the responses by adding the `context` parameter to the interceptor.
+
+```dart
+Future<void> myContextIs(WidgetTester tester, String ctx) async {
+  MockInterceptor.setContext(ctx);
+}
+```
+
+When you set the context, the interceptor will look for the file with the same name as the context in the folder of the response.
+
+For example, if you set the context as 'test', the interceptor will look for the file `test/dio_responses/api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts/test.json`.
+
+If 'test' is not found, the interceptor will look for the file `test/dio_responses/api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts.json`.
+
 # License
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor/blob/63d859aba8b999b9e62431c5675a8bfa312667ae/LICENSE) file for details.

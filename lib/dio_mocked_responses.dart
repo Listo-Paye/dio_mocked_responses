@@ -13,6 +13,7 @@ class MockInterceptor extends Interceptor {
   final RegExp _regexpTemplate = RegExp(r'"\$\{template\}"');
   static const StandardExpressionSyntax _exSyntax = StandardExpressionSyntax();
   static final List<HistoryItem> _history = [];
+  static String? _context;
 
   MockInterceptor({String basePath = 'test/dio_responses'}) {
     _basePath = basePath.endsWith('/') ? basePath : '$basePath/';
@@ -20,16 +21,34 @@ class MockInterceptor extends Interceptor {
 
   static List<HistoryItem> get history => _history;
 
+  static void setContext(String context) {
+    _context = context;
+  }
+
+  static void clearContext() {
+    _context = null;
+  }
+
   static void clearHistory() {
     _history.clear();
+  }
+
+  String getfilePath(String path) {
+    var context = _context ?? '';
+    var filePath = '$_basePath${path.replaceAll(RegExp(r"(\?|=|&)"), '_')}';
+    if (context.isNotEmpty) {
+      var fileWithContext = '$filePath/$context.json';
+      if (File(fileWithContext).existsSync()) {
+        return fileWithContext;
+      }
+    }
+    return '$filePath.json';
   }
 
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    final file = File(
-      '$_basePath${options.path.replaceAll(RegExp(r"(\?|=|&)"), '_')}.json',
-    );
+    final file = File(getfilePath(options.path));
 
     _history.add(
         HistoryItem(options.method, options.path, options.queryParameters));
