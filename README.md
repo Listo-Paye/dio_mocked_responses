@@ -120,6 +120,8 @@ For example, if you set the context as 'test', the interceptor will look for the
 
 If 'test' is not found, the interceptor will look for the file `test/dio_responses/api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts.json`.
 
+To remove the context, you can call `MockInterceptor.clearContext()`.
+
 # License
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor/blob/63d859aba8b999b9e62431c5675a8bfa312667ae/LICENSE) file for details.
