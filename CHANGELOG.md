@@ -1,3 +1,7 @@
+## 1.5.0+2
+* Add DioException on handler when status code different of 200
+* Add request data on history item
+
 ## 1.5.0+1
 * Add context support
 
