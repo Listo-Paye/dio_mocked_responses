@@ -83,6 +83,22 @@ class MockInterceptor extends Interceptor {
     Map<String, dynamic>? template = route['template'];
     Object? data = route['data'];
 
+    if (statusCode != 200) {
+      handler.reject(
+        DioException(
+          requestOptions: options,
+          response: Response(
+            requestOptions: options,
+            statusCode: statusCode,
+            data: data,
+          ),
+          error: "Mock error with status $statusCode",
+          type: DioExceptionType.badResponse,
+        ),
+      );
+      return;
+    }
+
     if (template == null && data == null) {
       handler.resolve(Response(
         requestOptions: options,
