@@ -50,8 +50,8 @@ class MockInterceptor extends Interceptor {
       RequestOptions options, RequestInterceptorHandler handler) async {
     final file = File(getfilePath(options.path));
 
-    _history.add(
-        HistoryItem(options.method, options.path, options.queryParameters));
+    _history.add(HistoryItem(
+        options.method, options.path, options.data, options.queryParameters));
 
     if (!file.existsSync()) {
       handler.reject(DioException(
@@ -222,6 +222,7 @@ class HistoryItem {
   final String method;
   final String path;
   final dynamic data;
+  final dynamic queryParameters;
 
-  HistoryItem(this.method, this.path, this.data);
+  HistoryItem(this.method, this.path, this.data, this.queryParameters);
 }
