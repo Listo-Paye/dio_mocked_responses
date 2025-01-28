@@ -4,128 +4,167 @@ _Forked from [Flutter Dio Mock Interceptor](https://github.com/yongxin-tech/Flut
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor/blob/63d859aba8b999b9e62431c5675a8bfa312667ae/LICENSE) [![Publish to pub.dev](https://github.com/Listo-Paye/dio_mocked_responses/actions/workflows/publish.yaml/badge.svg)](https://github.com/Listo-Paye/dio_mocked_responses/actions/workflows/publish.yaml)
 
-# Environment
+# dio_mocked_responses
 
-The widget was only tested on following environment,
-* Flutter: 3.24+ (with sound null safety)
-* Dio: 5.0.0+
+`dio_mocked_responses` is a Flutter package designed to mock HTTP responses for testing purposes. It intercepts HTTP requests made using the Dio package and returns mocked responses based on predefined JSON files. This package helps in isolating and testing features of your application without relying on external services.
 
-# Usage
+## Features
+- Intercept and mock HTTP requests.
+- Configure persona-based and context-based responses.
+- Support for template-based dynamic responses.
+- Track request history.
+- Easy integration with the Dio package.
 
-Add interceptor to Dio
-```dart
-    final dio = Dio()
-      ..interceptors.add(
-        MockInterceptor(
-          basePath: 'test/dio_responses',
-        ),
-      );
+## Installation
+Add `dio_mocked_responses` to your `pubspec.yaml`:
+```shell
+flutter pub add dev:dio_mocked_responses 
 ```
 
-`basePath` is the path to the folder containing the mock responses. The path is relative to the root of the assets folder.
-His default value is `test/dio_responses`.
+## Usage
+### Basic Setup
+1. Import the package:
+```dart
+import 'package:dio_mocked_responses/dio_mocked_responses.dart';
+```
 
-By example, if you want to test your backend API for the route `api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts`, create the file at `test/dio_responses/api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts.json` with:
-  
-  ```json
+2. Create a `MockInterceptor` instance:
+```dart
+final dio = Dio();
+dio.interceptors.add(MockInterceptor(basePath: 'test/mocks')); // Specify the base path to your mock files
+```
+
+3. Define your mock response files:
+   Mock response files are JSON files stored in the `basePath` directory. The directory structure can be personalized using personas or contexts.
+
+Example file structure:
+```
+/test/mocks/
+  GET_user_profile.json
+  POST_login.json
+  admin/
+    GET_dashboard.json
+```
+Each JSON file should define the HTTP method, status code, response data, and optional templates. Example:
+```json
 {
   "GET": {
     "statusCode": 200,
     "data": {
-      "contacts": [
-        {
-          "id": 1,
-          "name": "Seth Ladd"
-        },
-        {
-          "id": 2,
-          "name": "Eric Seidel"
-        }
-      ]
+      "id": 1,
+      "name": "John Doe"
+    }
+  },
+  "POST": {
+    "statusCode": 201,
+    "template": {
+      "content": {"message": "Welcome, \${req.data.username}!"}
     }
   }
 }
-  ```
-
-* For this example:
-```dart
-test('Load file with Interceptor', () async {
-    final dio = Dio()
-    ..interceptors.add(
-    MockInterceptor(basePath: 'test/dio_responses'),
-    );
-    
-    final response = await dio.get<Map<String, dynamic>>(
-    'api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts',
-    );
-    expect(response.statusCode, equals(200));
-    expect(response.data, isNotNull);
-    final contacts = response.data!['contacts'];
-    
-    final seth = contacts.first;
-    expect(seth['id'], 1);
-    expect(seth['name'], 'Seth Ladd');
-    
-    final eric = contacts.last;
-    expect(eric['id'], 2);
-    expect(eric['name'], 'Eric Seidel');
-});
 ```
 
-* Template example:
+### Adding Personas
+Personas allow you to create mock responses tailored to specific roles or users. To set a persona:
+```dart
+MockInterceptor.setPersona('admin');
+```
+The interceptor will look for files in the corresponding `admin/` subdirectory.
+
+To clear a persona:
+```dart
+MockInterceptor.clearPersona();
+```
+
+### Adding Contexts
+Contexts add another layer of customization for responses. For example, you can define responses specific to a certain application state:
+```dart
+MockInterceptor.setContext('logged_in');
+```
+The interceptor will prioritize files with the context name.
+
+To clear a context:
+```dart
+MockInterceptor.clearContext();
+```
+
+### Query Parameters
+Query parameters are automatically parsed and can influence the mocked response. If your endpoint has query parameters, ensure the filename reflects them by replacing special characters with `_`.
+
+Example:
+```
+GET_user_profile?role=admin -> GET_user_profile_role=admin.json
+```
+
+### Dynamic Responses with Templates
+Templates enable the generation of dynamic responses based on request data or predefined variables. Use the `template` key in your mock file to define dynamic responses.
+
+Example:
 ```json
 {
-  "POST": {
+  "GET": {
     "statusCode": 200,
     "template": {
-      "size": 100000,
       "content": {
-        "id": "test${index}",
-        "name": "name_${index}"
+        "greeting": "Hello, \${req.queryParameters.name}!"
       }
     }
   }
 }
 ```
+This generates a response where the greeting dynamically includes the `name` query parameter from the request.
 
-## Get history
-You can get the history of requests with the `history` property of the interceptor.
-
+### Tracking Request History
+You can access the history of intercepted requests:
 ```dart
-Future<void> aCallWasMadeWithData(
-    WidgetTester tester,
-    String verb,
-    String path,
-    bdd.DataTable dataTable,
-    ) async {
-  expect(
-      MockInterceptor.history.where((p) => p.method == verb && p.path == path),
-      hasLength(1));
+final history = MockInterceptor.history;
+history.forEach((item) {
+  print('Method: ${item.method}, Path: ${item.path}');
+});
+```
+To clear the history:
+```dart
+MockInterceptor.clearHistory();
+```
+
+## Error Handling
+If a file or route is not found, the interceptor will reject the request with a `DioException`:
+```dart
+DioException: Can't find file: test/mocks/GET_user_profile.json
+```
+Ensure that your mock files are correctly structured and accessible from the specified `basePath`.
+
+## Example Test
+Here is a complete example of using `dio_mocked_responses` in a test:
+```dart
+import 'package:dio/dio.dart';
+import 'package:dio_mocked_responses/dio_mocked_responses.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  late Dio dio;
+
+  setUp(() {
+    dio = Dio();
+    dio.interceptors.add(MockInterceptor(basePath: 'test/mocks'));
+  });
+
+  test('GET user profile', () async {
+    final response = await dio.get('/user/profile');
+    expect(response.statusCode, 200);
+    expect(response.data['name'], 'John Doe');
+  });
 }
 ```
 
-## Contextualised responses
-
-You can contextualize the responses by adding the `context` parameter to the interceptor.
-
-```dart
-Future<void> myContextIs(WidgetTester tester, String ctx) async {
-  MockInterceptor.setContext(ctx);
-}
-```
-
-When you set the context, the interceptor will look for the file with the same name as the context in the folder of the response.
-
-For example, if you set the context as 'test', the interceptor will look for the file `test/dio_responses/api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts/test.json`.
-
-If 'test' is not found, the interceptor will look for the file `test/dio_responses/api/client/55036c03-6d3f-4053-9547-c08a32ac9aca/contacts.json`.
-
-To remove the context, you can call `MockInterceptor.clearContext()`.
+## Contribution
+Feel free to submit issues, feature requests, or pull requests to improve this package. Contributions are welcome!
+More on [CONTRIBUTING.md](./CONTRIBUTING.md) file.
 
 # License
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor/blob/63d859aba8b999b9e62431c5675a8bfa312667ae/LICENSE) file for details.
 
-> Copyright (c) 2024-present [Listo Paye](https://listo.pro/)
+> Copyright (c) 2025 [Listo Paye](https://listo.pro/)
 > 
-> Copyright (c) 2023-present [Yong-Xin Technology Ltd.](https://yong-xin.tech/)
+> Copyright (c) 2023 [Yong-Xin Technology Ltd.](https://yong-xin.tech/)
