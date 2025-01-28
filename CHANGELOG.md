@@ -1,3 +1,10 @@
+## 1.6.0
+* Add persona to mock system
+* fix: add tests for query parameters
+* fix: add tests for data in post requests in history
+* doc: make new README & add CONTRIBUTING
+* doc: add example with first configuration
+
 ## 1.5.0+2
 * Add DioException on handler when status code different of 200
 * Add request data on history item
