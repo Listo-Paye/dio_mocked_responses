@@ -4,14 +4,14 @@
     "data": {
       "contacts": [
         {
-          "id": 1,
+          "id": 4,
           "name": "Seth Ladd"
+        },
+        {
+          "id": 5,
+          "name": "Eric Seidel"
         }
       ]
     }
-  },
-  "POST": {
-    "statusCode": 200,
-    "data": null
   }
 }

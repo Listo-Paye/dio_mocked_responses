@@ -14,12 +14,23 @@ class MockInterceptor extends Interceptor {
   static const StandardExpressionSyntax _exSyntax = StandardExpressionSyntax();
   static final List<HistoryItem> _history = [];
   static String? _context;
+  static String? _persona;
 
   MockInterceptor({String basePath = 'test/dio_responses'}) {
     _basePath = basePath.endsWith('/') ? basePath : '$basePath/';
   }
 
   static List<HistoryItem> get history => _history;
+
+  static void setPersona(String persona) {
+    _persona = persona;
+  }
+
+  static void clearPersona() {
+    _persona = null;
+  }
+
+  static String? get persona => _persona;
 
   static void setContext(String context) {
     _context = context;
@@ -35,7 +46,9 @@ class MockInterceptor extends Interceptor {
 
   String getfilePath(String path) {
     var context = _context ?? '';
-    var filePath = '$_basePath${path.replaceAll(RegExp(r"(\?|=|&)"), '_')}';
+    var persona = _persona ?? '';
+    var basePath = persona.isEmpty ? _basePath : '$_basePath$persona/';
+    var filePath = '$basePath${path.replaceAll(RegExp(r"(\?|=|&)"), '_')}';
     if (context.isNotEmpty) {
       var fileWithContext = '$filePath/$context.json';
       if (File(fileWithContext).existsSync()) {
@@ -45,13 +58,36 @@ class MockInterceptor extends Interceptor {
     return '$filePath.json';
   }
 
+  Map<String, dynamic> getQueryParameters(RequestOptions options) {
+    if (options.queryParameters.isEmpty && options.path.contains('?')) {
+      Map<String, dynamic> queryParameters = {};
+      for (final queryParameter in options.path.split('?').last.split('&')) {
+        final queryParameterSplit = queryParameter.split('=');
+        queryParameters[queryParameterSplit.first] = queryParameterSplit.last;
+      }
+      return queryParameters;
+    }
+    return options.queryParameters;
+  }
+
+  String getFullPath(RequestOptions options) {
+    if (options.queryParameters.isEmpty) {
+      return options.path;
+    }
+    return "${options.path}?${options.queryParameters.entries.map((e) => "${e.key}=${e.value}").join("&")}";
+  }
+
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    final file = File(getfilePath(options.path));
+    final file = File(getfilePath(getFullPath(options)));
 
     _history.add(HistoryItem(
-        options.method, options.path, options.data, options.queryParameters));
+      options.method,
+      getFullPath(options),
+      options.data,
+      getQueryParameters(options),
+    ));
 
     if (!file.existsSync()) {
       handler.reject(DioException(
