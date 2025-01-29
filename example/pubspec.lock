@@ -215,13 +215,13 @@ packages:
     source: hosted
     version: "0.1.6"
   dio:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: dio
-      sha256: "5598aa796bbf4699afd5c67c0f5f6e2ed542afc956884b9cd58c306966efc260"
+      sha256: "5fe8c82766abd7494130a3dc5b9ffb8ca916898900c75a369b287267eac8d5b0"
       url: "https://pub.dev"
     source: hosted
-    version: "5.7.0"
+    version: "5.8.0"
   dio_cache_interceptor:
     dependency: "direct main"
     description:
@@ -368,10 +368,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: daf3ff5570f55396b2d2c9bf8136d7db3a8acf208ac0cef92a3ae2beb9a81550
+      sha256: "9b736a9fa879d8ad6df7932cbdcc58237c173ab004ef90d8377923d7ad731eaa"
       url: "https://pub.dev"
     source: hosted
-    version: "14.7.1"
+    version: "14.7.2"
   graphs:
     dependency: transitive
     description:
@@ -773,7 +773,7 @@ packages:
     source: hosted
     version: "4.1.0"
   retrofit:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: retrofit
       sha256: c6cc9ad3374e6d07008343140a67afffaaa34cdf6bf08d4847d91417a99dcf45

@@ -1,4 +1,4 @@
-library dio_mocked_responses;
+library;
 
 //ignore_for_file:  prefer_interpolation_to_compose_strings,unnecessary_string_escapes
 
@@ -6,87 +6,124 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:dio_mocked_responses/history_item.dart';
+import 'package:dio_mocked_responses/mock_configuration.dart';
 import 'package:template_expressions/template_expressions.dart';
 
+export 'history_item.dart';
+
+/// MockInterceptor
+///
+/// This class is used to intercept the requests made by the Dio client and return mocked responses.
+///
+/// To use this class, you need to add it to the interceptors of the Dio client.
+/// ```dart
+/// final dio = Dio()
+/// dio.interceptors.add(MockInterceptor(basePath: 'test/dio_responses'));
+/// ```
+/// The [basePath] parameter is the path to the directory where the response files are stored.
+/// The response files are JSON files that contain the mocked responses for the requests.
+/// The files are stored in a directory structure that matches the path of the requests.
+/// For example, the response file for the request 'api/client/contacts' would be stored in the file 'test/dio_responses/api/client/contacts.json'.
+/// The response files should contain the mocked response for each HTTP method used in the request.
+/// The response files should have the following structure:
+/// ```json
+/// {
+///  "GET": {
+///   "statusCode": 200,
+///   "data": {
+///     "contacts": [
+///       {
+///         "id": 1,
+///         "name": "Seth Ladd"
+///       },
+///       {
+///         "id": 2,
+///         "name": "Eric Seidel"
+///       }
+///     ]
+///   }
+///  }
+///  ```
 class MockInterceptor extends Interceptor {
   late final String _basePath;
-  final RegExp _regexpTemplate = RegExp(r'"\$\{template\}"');
-  static const StandardExpressionSyntax _exSyntax = StandardExpressionSyntax();
-  static final List<HistoryItem> _history = [];
-  static String? _context;
-  static String? _persona;
 
   MockInterceptor({String basePath = 'test/dio_responses'}) {
     _basePath = basePath.endsWith('/') ? basePath : '$basePath/';
   }
 
-  static List<HistoryItem> get history => _history;
+  /// Returns the history of requests made to the server.
+  ///
+  /// The history is stored in a list of [HistoryItem] objects.
+  static List<HistoryItem> get history => MockConfiguration.history;
 
+  /// Sets the persona used to load the files.
   static void setPersona(String persona) {
-    _persona = persona;
+    MockConfiguration.setPersona(persona);
   }
 
+  /// Clears the persona used to load the files.
   static void clearPersona() {
-    _persona = null;
+    MockConfiguration.clearPersona();
   }
 
-  static String? get persona => _persona;
-
+  /// Sets the context used to load the files.
   static void setContext(String context) {
-    _context = context;
+    MockConfiguration.setContext(context);
   }
 
+  /// Clears the context used to load the files.
   static void clearContext() {
-    _context = null;
+    MockConfiguration.clearContext();
   }
 
+  /// Clears the history of requests made to the server.
   static void clearHistory() {
-    _history.clear();
+    MockConfiguration.clearHistory();
   }
 
-  String getfilePath(String path) {
-    var context = _context ?? '';
-    var persona = _persona ?? '';
-    var basePath = persona.isEmpty ? _basePath : '$_basePath$persona/';
-    var filePath = '$basePath${path.replaceAll(RegExp(r"(\?|=|&)"), '_')}';
-    if (context.isNotEmpty) {
-      var fileWithContext = '$filePath/$context.json';
-      if (File(fileWithContext).existsSync()) {
-        return fileWithContext;
-      }
-    }
-    return '$filePath.json';
-  }
-
-  Map<String, dynamic> getQueryParameters(RequestOptions options) {
-    if (options.queryParameters.isEmpty && options.path.contains('?')) {
-      Map<String, dynamic> queryParameters = {};
-      for (final queryParameter in options.path.split('?').last.split('&')) {
-        final queryParameterSplit = queryParameter.split('=');
-        queryParameters[queryParameterSplit.first] = queryParameterSplit.last;
-      }
-      return queryParameters;
-    }
-    return options.queryParameters;
-  }
-
-  String getFullPath(RequestOptions options) {
-    if (options.queryParameters.isEmpty) {
-      return options.path;
-    }
-    return "${options.path}?${options.queryParameters.entries.map((e) => "${e.key}=${e.value}").join("&")}";
-  }
-
+  /// onRequest
+  ///
+  /// This method is called before the request is sent.
+  /// The main purpose of this method is to read the response file and return the mocked response.
+  ///
+  /// If the file is not found, the method will reject the request with an error.
+  /// If the file is found, the method will parse the file and return the mocked response.
+  ///
+  /// The method will also store the history of the request in the [MockConfiguration.history] list.
+  ///
+  /// Example of a response file:
+  /// ```json
+  /// {
+  ///  "GET": {
+  ///   "statusCode": 200,
+  ///   "data": {
+  ///     "contacts": [
+  ///       {
+  ///         "id": 1,
+  ///         "name": "Seth Ladd"
+  ///       },
+  ///       {
+  ///         "id": 2,
+  ///         "name": "Eric Seidel"
+  ///       }
+  ///     ]
+  ///   }
+  ///  }
+  ///  ```
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    final file = File(getfilePath(getFullPath(options)));
+    final file = File(MockConfiguration.getfilePath(
+      MockConfiguration.getFullPath(options),
+      _basePath,
+    ));
 
-    _history.add(HistoryItem(
+    MockConfiguration.history.add(HistoryItem(
       options.method,
-      getFullPath(options),
+      MockConfiguration.getFullPath(options),
       options.data,
-      getQueryParameters(options),
+      MockConfiguration.getQueryParameters(options),
     ));
 
     if (!file.existsSync()) {
@@ -182,7 +219,7 @@ class MockInterceptor extends Interceptor {
       }
 
       resData = Template(
-        syntax: [_exSyntax],
+        syntax: [MockConfiguration.exSyntax],
         value: resData,
       ).process(context: exContext);
 
@@ -198,7 +235,7 @@ class MockInterceptor extends Interceptor {
 
     if (template != null) {
       String tData = _templateData(template, exContext);
-      resData = resData.replaceAll(_regexpTemplate, tData);
+      resData = resData.replaceAll(MockConfiguration.regexpTemplate, tData);
     }
 
     Map<String, dynamic>? templates = route['templates'];
@@ -216,7 +253,7 @@ class MockInterceptor extends Interceptor {
     }
 
     resData = Template(
-      syntax: [_exSyntax],
+      syntax: [MockConfiguration.exSyntax],
       value: resData,
     ).process(context: exContext);
 
@@ -243,7 +280,9 @@ class MockInterceptor extends Interceptor {
   }
 
   String _templateData(
-      Map<String, dynamic> template, Map<String, dynamic> exContext) {
+    Map<String, dynamic> template,
+    Map<String, dynamic> exContext,
+  ) {
     var content = template['content'];
     if (content == null) {
       return "{}";
@@ -253,7 +292,7 @@ class MockInterceptor extends Interceptor {
     String sContent = json.encode(content);
 
     var exTemplate = Template(
-      syntax: [_exSyntax],
+      syntax: [MockConfiguration.exSyntax],
       value: sContent,
     );
 
@@ -268,13 +307,4 @@ class MockInterceptor extends Interceptor {
     }).join(",");
     return "[$joinString]";
   }
-}
-
-class HistoryItem {
-  final String method;
-  final String path;
-  final dynamic data;
-  final dynamic queryParameters;
-
-  HistoryItem(this.method, this.path, this.data, this.queryParameters);
 }
