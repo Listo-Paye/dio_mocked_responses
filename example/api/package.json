@@ -1,0 +1,15 @@
+{
+  "name": "keycloak-api",
+  "version": "1.0.0",
+  "description": "API for user information with Keycloak authentication",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^3.3.2"
+  }
+}

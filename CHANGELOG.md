@@ -1,10 +1,16 @@
+## 1.6.2
+* feat(example): Add example with BDD Gherkin and Unit tests to call Github API
+
+## 1.6.1
+* code refactored
+* doc: add code documentation
+
 ## 1.6.1
 * Add persona to mock system
 * fix: add tests for query parameters
 * fix: add tests for data in post requests in history
 * doc: make new README & add CONTRIBUTING
 * doc: add example with first configuration
-* doc: add code documentation
 
 ## 1.5.0+2
 * Add DioException on handler when status code different of 200
