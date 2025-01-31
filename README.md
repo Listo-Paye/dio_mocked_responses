@@ -1,4 +1,4 @@
-# Flutter Dio Mock Interceptor
+# Flutter Dio Mocked Responses
 
 _Forked from [Flutter Dio Mock Interceptor](https://github.com/yongxin-tech/Flutter_Dio_Mock_Interceptor)_
 
@@ -58,7 +58,7 @@ Each JSON file should define the HTTP method, status code, response data, and op
   "POST": {
     "statusCode": 201,
     "template": {
-      "content": {"message": "Welcome, \${req.data.username}!"}
+      "content": {"message": "Welcome, ${req.data.username}!"}
     }
   }
 }
@@ -93,7 +93,7 @@ Query parameters are automatically parsed and can influence the mocked response.
 
 Example:
 ```
-GET_user_profile?role=admin -> GET_user_profile_role=admin.json
+GET_user_profile?role=admin -> GET_user_profile_role_admin.json
 ```
 
 ### Dynamic Responses with Templates
@@ -106,7 +106,7 @@ Example:
     "statusCode": 200,
     "template": {
       "content": {
-        "greeting": "Hello, \${req.queryParameters.name}!"
+        "greeting": "Hello, ${req.queryParameters.name}!"
       }
     }
   }
