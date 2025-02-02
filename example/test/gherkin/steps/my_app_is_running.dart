@@ -14,6 +14,6 @@ Future<void> myAppIsRunning(WidgetTester tester) async {
   getIt.allowReassignment = true;
   configureDependencies(environment: Environment.test);
   TestWidgetsFlutterBinding.ensureInitialized();
-  await tester.pumpWidget(App());
+  await tester.pumpWidget(UiModule());
   await tester.pumpAndSettle();
 }

@@ -8,6 +8,7 @@ import 'api_client.dart';
 import 'api_module.dart';
 
 @prod
+@Order(-1)
 @Singleton(as: ApiModule)
 class ApiModuleImpl implements ApiModule {
   late final Dio _dio;

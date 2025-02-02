@@ -7,6 +7,7 @@ import 'api_client.dart';
 import 'api_module.dart';
 
 @test
+@Order(-1)
 @Singleton(as: ApiModule)
 class ApiModuleStub implements ApiModule {
   late final Dio _dio;

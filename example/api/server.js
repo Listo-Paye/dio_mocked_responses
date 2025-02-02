@@ -5,6 +5,13 @@ import fetch from "node-fetch"
 const app = express()
 const port = 3000
 
+// Set CORS configuration to authorize all origins
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*")
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
+    next()
+})
+
 // Middleware pour vérifier le token
 const verifyToken = async (req, res, next) => {
     const bearerHeader = req.headers["authorization"]

@@ -17,7 +17,7 @@ import 'core/di/authentication/authentication_impl.dart' as _i588;
 import 'core/di/authentication/authentication_stub.dart' as _i690;
 import 'core/di/configuration/configuration.dart' as _i459;
 import 'core/di/configuration/configuration_prod.dart' as _i658;
-import 'core/di/configuration/configuration_test.dart' as _i595;
+import 'core/di/configuration/configuration_stub.dart' as _i219;
 import 'core/di/network/api_module.dart' as _i496;
 import 'core/di/network/api_module_impl.dart' as _i1022;
 import 'core/di/network/api_module_stub.dart' as _i763;
@@ -27,6 +27,7 @@ import 'data/repository/user_is_authenticated.dart' as _i1048;
 import 'data/repository/user_login.dart' as _i1029;
 import 'domain/usecases/get_user.dart' as _i714;
 import 'domain/usecases/login_user.dart' as _i782;
+import 'ui/router.dart' as _i766;
 
 const String _test = 'test';
 const String _prod = 'prod';
@@ -43,7 +44,7 @@ extension GetItInjectableX on _i174.GetIt {
       environmentFilter,
     );
     gh.singleton<_i459.Configuration>(
-      () => _i595.ConfigurationDev(),
+      () => _i219.ConfigurationStub(),
       registerFor: {_test},
     );
     gh.singleton<_i459.Configuration>(
@@ -54,20 +55,31 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i690.AuthenticationStub(),
       registerFor: {_test},
     );
-    gh.factory<_i1029.UserLoginRepository>(
-        () => _i1029.UserLoginRepository(gh<_i704.Authentication>()));
-    gh.factory<_i1048.UserIsAuthenticatedRepository>(() =>
-        _i1048.UserIsAuthenticatedRepository(gh<_i1039.Authentication>()));
-    gh.singleton<_i496.ApiModule>(
-      () => _i763.ApiModuleStub(gh<_i459.Configuration>()),
-      registerFor: {_test},
-    );
-    gh.factory<_i440.UserInfoRepository>(
-        () => _i440.UserInfoRepository(gh<_i496.ApiModule>()));
     gh.singleton<_i704.Authentication>(
       () => _i588.AuthenticationImpl(gh<_i459.Configuration>()),
       registerFor: {_prod},
     );
+    gh.singleton<_i496.ApiModule>(
+      () => _i763.ApiModuleStub(gh<_i459.Configuration>()),
+      registerFor: {_test},
+    );
+    gh.singleton<_i496.ApiModule>(
+      () => _i1022.ApiModuleImpl(
+        gh<_i704.Authentication>(),
+        gh<_i459.Configuration>(),
+      ),
+      registerFor: {_prod},
+    );
+    gh.singleton<_i766.AppRouter>(
+      () => _i766.AppRouter(),
+      dispose: (i) => i.dispose(),
+    );
+    gh.factory<_i1029.UserLoginRepository>(
+        () => _i1029.UserLoginRepository(gh<_i704.Authentication>()));
+    gh.factory<_i1048.UserIsAuthenticatedRepository>(() =>
+        _i1048.UserIsAuthenticatedRepository(gh<_i1039.Authentication>()));
+    gh.factory<_i440.UserInfoRepository>(
+        () => _i440.UserInfoRepository(gh<_i496.ApiModule>()));
     gh.singleton<_i714.GetUser>(
       () => _i714.GetUser(
         gh<_i947.UserIsAuthenticatedRepository>(),
@@ -79,13 +91,6 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i947.UserLoginRepository>(),
           gh<_i714.GetUser>(),
         ));
-    gh.singleton<_i496.ApiModule>(
-      () => _i1022.ApiModuleImpl(
-        gh<_i704.Authentication>(),
-        gh<_i459.Configuration>(),
-      ),
-      registerFor: {_prod},
-    );
     return this;
   }
 }

@@ -16,7 +16,7 @@ void main() {
     getIt.allowReassignment = true;
     configureDependencies(environment: Environment.test);
     TestWidgetsFlutterBinding.ensureInitialized();
-    await tester.pumpWidget(App());
+    await tester.pumpWidget(UiModule());
     await tester.pumpAndSettle();
 
     // assert
@@ -31,7 +31,7 @@ void main() {
     getIt.allowReassignment = true;
     configureDependencies(environment: Environment.test);
     TestWidgetsFlutterBinding.ensureInitialized();
-    await tester.pumpWidget(App());
+    await tester.pumpWidget(UiModule());
     await tester.pumpAndSettle();
 
     // act

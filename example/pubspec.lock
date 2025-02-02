@@ -268,7 +268,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.6.1"
+    version: "1.6.2"
   dio_oidc_interceptor:
     dependency: "direct main"
     description:

@@ -1,41 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../domain/domain_module.dart';
 import '../injection.dart';
+import 'router.dart';
 
-class App extends StatelessWidget {
-  App({super.key});
-
-  Stream<UserEntity> getStream() {
-    final getUser = getIt<GetUser>();
-    getUser();
-    return getUser.stream;
-  }
-
-  void login() {
-    final loginInteractor = getIt<LoginUser>();
-    loginInteractor();
-  }
+class UiModule extends StatelessWidget {
+  final AppRouter _router = getIt<AppRouter>();
+  UiModule({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Example',
-      home: Scaffold(
-        body: Center(
-          child: StreamBuilder(
-            initialData: AnonymousEntity(),
-            stream: getStream(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data is AuthenticatedEntity) {
-                final user = snapshot.data as AuthenticatedEntity;
-                return Text("Welcome, ${user.name}");
-              }
-              return ElevatedButton(onPressed: login, child: Text("Login"));
-            },
-          ),
-        ),
-      ),
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: "Example",
+      routerConfig: _router.goRouter,
     );
   }
 }

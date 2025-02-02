@@ -6,6 +6,7 @@ import 'package:injectable/injectable.dart';
 import 'authentication.dart';
 
 @test
+@Order(-2)
 @Singleton(as: Authentication)
 class AuthenticationStub implements Authentication {
   bool _isAuthenticated = false;

@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'configuration.dart';
 
 @prod
-@Order(-1)
+@Order(-3)
 @Singleton(as: Configuration)
 class ConfigurationProd implements Configuration {
   @override

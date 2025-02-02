@@ -1,3 +1,6 @@
+## 1.6.3
+* feat(example): Add routing system to example
+
 ## 1.6.2
 * feat(example): Add example with BDD Gherkin and Unit tests to call Github API
 
