@@ -36,13 +36,6 @@ jobs:
       - name: Check Publish Warnings
         run: dart pub publish --dry-run
 
-      - name: Publish
-        uses: k-paxian/dart-package-publisher@v1.5.1
-        with:
-          credentialJson: ${{ secrets.CREDENTIAL_JSON }}
-          flutter: true
-          skipTests: true
-
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:

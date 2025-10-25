@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio_mocked_responses/history_item.dart';
 import 'package:dio_mocked_responses/mock_configuration.dart';
-import 'package:template_expressions/template_expressions.dart';
+import 'package:template_expressions_4/template_expressions.dart';
 
 export 'history_item.dart';
 
@@ -113,22 +113,32 @@ class MockInterceptor extends Interceptor {
   ///  ```
   @override
   void onRequest(
-      RequestOptions options, RequestInterceptorHandler handler) async {
-    final file = File(MockConfiguration.getfilePath(
-      MockConfiguration.getFullPath(options),
-      _basePath,
-    ));
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    final file = File(
+      MockConfiguration.getfilePath(
+        MockConfiguration.getFullPath(options),
+        _basePath,
+      ),
+    );
 
-    MockConfiguration.history.add(HistoryItem(
-      options.method,
-      MockConfiguration.getFullPath(options),
-      options.data,
-      MockConfiguration.getQueryParameters(options),
-    ));
+    MockConfiguration.history.add(
+      HistoryItem(
+        options.method,
+        MockConfiguration.getFullPath(options),
+        options.data,
+        MockConfiguration.getQueryParameters(options),
+      ),
+    );
 
     if (!file.existsSync()) {
-      handler.reject(DioException(
-          requestOptions: options, error: "Can't find file: ${file.path}"));
+      handler.reject(
+        DioException(
+          requestOptions: options,
+          error: "Can't find file: ${file.path}",
+        ),
+      );
       return;
     }
 
@@ -136,18 +146,24 @@ class MockInterceptor extends Interceptor {
     try {
       json = jsonDecode(file.readAsStringSync());
     } catch (e) {
-      handler.reject(DioException(
-          requestOptions: options, error: "Can't parse file: ${file.path}"));
+      handler.reject(
+        DioException(
+          requestOptions: options,
+          error: "Can't parse file: ${file.path}",
+        ),
+      );
       return;
     }
 
     final Map<String, dynamic> route = json[options.method];
 
     if (route.isEmpty) {
-      handler.reject(DioException(
+      handler.reject(
+        DioException(
           requestOptions: options,
-          error:
-              "Can't find route setting: ${options.path}:${options.method}"));
+          error: "Can't find route setting: ${options.path}:${options.method}",
+        ),
+      );
       return;
     }
 
@@ -173,10 +189,9 @@ class MockInterceptor extends Interceptor {
     }
 
     if (template == null && data == null) {
-      handler.resolve(Response(
-        requestOptions: options,
-        statusCode: statusCode,
-      ));
+      handler.resolve(
+        Response(requestOptions: options, statusCode: statusCode),
+      );
       return;
     }
 
@@ -184,16 +199,17 @@ class MockInterceptor extends Interceptor {
     var exContext = vars ?? {};
 
     exContext.putIfAbsent(
-        'req',
-        () => {
-              'headers': options.headers,
-              'queryParameters': options.queryParameters,
-              'baseUrl': options.baseUrl,
-              'method': options.method,
-              'path': options.path,
-              // 'uri': options.uri.,
-              // 'connectTimeout': options.connectTimeout
-            });
+      'req',
+      () => {
+        'headers': options.headers,
+        'queryParameters': options.queryParameters,
+        'baseUrl': options.baseUrl,
+        'method': options.method,
+        'path': options.path,
+        // 'uri': options.uri.,
+        // 'connectTimeout': options.connectTimeout
+      },
+    );
 
     if (options.data != null) {
       if (options.data is Map) {
@@ -223,11 +239,13 @@ class MockInterceptor extends Interceptor {
         value: resData,
       ).process(context: exContext);
 
-      handler.resolve(Response(
-        data: resData,
-        requestOptions: options,
-        statusCode: statusCode,
-      ));
+      handler.resolve(
+        Response(
+          data: resData,
+          requestOptions: options,
+          statusCode: statusCode,
+        ),
+      );
       return;
     }
 
@@ -257,11 +275,13 @@ class MockInterceptor extends Interceptor {
       value: resData,
     ).process(context: exContext);
 
-    handler.resolve(Response(
-      data: jsonDecode(resData),
-      requestOptions: options,
-      statusCode: statusCode,
-    ));
+    handler.resolve(
+      Response(
+        data: jsonDecode(resData),
+        requestOptions: options,
+        statusCode: statusCode,
+      ),
+    );
   }
 
   String _replaceVarObjs(String resData, Map<String, dynamic>? vars) {
@@ -273,7 +293,9 @@ class MockInterceptor extends Interceptor {
       var vValue = element.value;
       if (vValue is Iterable || vValue is Map) {
         resData = resData.replaceAll(
-            RegExp(r'"\$\{' + vKey + '\}"'), json.encode(vValue));
+          RegExp(r'"\$\{' + vKey + '\}"'),
+          json.encode(vValue),
+        );
       }
     }
     return resData;

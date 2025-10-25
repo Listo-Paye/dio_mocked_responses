@@ -5,7 +5,7 @@ import '../injection.dart';
 import 'router.dart';
 
 class App extends StatelessWidget {
-  App({super.key});
+  const App({super.key});
 
   Stream<UserEntity> getStream() {
     final router = getIt<AppRouter>();

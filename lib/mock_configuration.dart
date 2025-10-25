@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:template_expressions/template_expressions.dart';
+import 'package:template_expressions_4/template_expressions.dart';
 
 import 'history_item.dart';
 
@@ -95,10 +95,6 @@ class MockConfiguration {
     if (options.queryParameters.isEmpty) {
       return options.path;
     }
-    return "${options.path}?${options.queryParameters.entries.map(
-          (e) => "${e.key}=${e.value}",
-        ).join(
-          "&",
-        )}";
+    return "${options.path}?${options.queryParameters.entries.map((e) => "${e.key}=${e.value}").join("&")}";
   }
 }

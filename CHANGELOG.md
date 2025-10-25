@@ -1,3 +1,8 @@
+## 1.6.4
+* update dependencies
+* change template_expressions package to template_expressions_4 (forked)
+* remove automatic publish
+
 ## 1.6.3
 * feat(example): Add routing system to example
 
