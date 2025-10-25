@@ -1,8 +1,8 @@
 name: dio_mocked_responses
 description: Interceptor that help you to mock backend responses in flutter project.
-version: 1.6.4
+version: 1.6.5
 homepage: https://listo.pro
-repository: https://github.com/Listo-Paye/dio_mocked_responses
+repository: https://github.com/b-fontaine/dio_mocked_responses
 
 environment:
   sdk: ^3.9.0
