@@ -1,3 +1,6 @@
+## 1.6.5+1
+* Update to Flutter 3.38
+ 
 ## 1.6.5
 * Repository owner changed Listo-Paye -> b-fontaine
 

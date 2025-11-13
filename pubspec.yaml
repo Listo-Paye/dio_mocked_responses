@@ -1,6 +1,6 @@
 name: dio_mocked_responses
 description: Interceptor that help you to mock backend responses in flutter project.
-version: 1.6.5
+version: 1.6.5+1
 homepage: https://listo.pro
 repository: https://github.com/b-fontaine/dio_mocked_responses
 
@@ -11,7 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   dio: ^5.9.0
-  template_expressions_4: ^4.0.0+1
+  template_expressions_4: ^4.0.0+2
+  meta: ^1.17.0
 
 dev_dependencies:
   flutter_test:
@@ -20,34 +21,6 @@ dev_dependencies:
 
 workspace:
   - example
-
-ignore_updates:
-  - 'archive'
-  - 'async'
-  - 'boolean_selector'
-  - 'characters'
-  - 'charcode'
-  - 'collection'
-  - 'clock'
-  - 'crypto'
-  - 'fake_async'
-  - 'file'
-  - 'json_path'
-  - 'matcher'
-  - 'material_color_utilities'
-  - 'meta'
-  - 'path'
-  - 'petitparser'
-  - 'source_span'
-  - 'stack_trace'
-  - 'stream_channel'
-  - 'string_scanner'
-  - 'sync_http'
-  - 'term_glyph'
-  - 'test_api'
-  - 'typed_data'
-  - 'vector_math'
-  - 'webdriver'
 
 
 flutter:
